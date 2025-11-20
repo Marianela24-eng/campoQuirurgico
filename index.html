@@ -719,6 +719,7 @@
         let currentPhase = 1;
         let totalItems = 6;
         let placedCount = 0;
+        let hasUsedRecoveryQuestion = false; // Nueva variable para controlar si ya usó la pregunta
         let placedItems = {
             cephalic: null,
             feet: null,
@@ -925,7 +926,13 @@
                 updateLives();
                 
                 if (lives <= 0) {
-                    showQuiz();
+                    // Solo mostrar pregunta si no la ha usado antes
+                    if (!hasUsedRecoveryQuestion) {
+                        showQuiz();
+                    } else {
+                        // Si ya usó su pregunta de recuperación, fin del juego
+                        endGame('lives');
+                    }
                 }
             }
         }
@@ -1019,6 +1026,7 @@
 
         function showQuiz() {
             clearInterval(timerInterval);
+            hasUsedRecoveryQuestion = true; // Marcar que ya usó su oportunidad
             const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
             
             document.getElementById('questionText').textContent = randomQuestion.question;
@@ -1094,6 +1102,9 @@
             } else if (reason === 'quiz') {
                 gameOverTitle.textContent = 'Juego Terminado';
                 gameOverMessage.textContent = 'No lograste responder la pregunta correctamente.';
+            } else if (reason === 'lives') {
+                gameOverTitle.textContent = 'Sin Vidas';
+                gameOverMessage.textContent = 'Ya utilizaste tu pregunta de recuperación. ¡Intenta de nuevo!';
             }
 
             quizModal.classList.remove('show');
